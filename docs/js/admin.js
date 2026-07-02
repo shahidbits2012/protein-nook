@@ -161,6 +161,7 @@
           ],
           total: 150,
           status: 'pending',
+          customerFlat: 'B-204',
           specialNote: 'Extra chutney please!',
           session: 'morning',
           createdAt: mockTs(now, 8, 15),
@@ -303,6 +304,7 @@
         <div class="order-customer">
           <span>👤 ${order.customerName}</span>
           <span>📱 ${order.customerPhone}</span>
+          ${order.customerFlat ? `<span>🏠 ${order.customerFlat}</span>` : ''}
         </div>
 
         <div class="order-items">${itemLines}</div>

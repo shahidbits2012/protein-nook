@@ -213,6 +213,7 @@
 
     const name  = $('customer-name').value.trim();
     const phone = $('customer-phone').value.trim();
+    const flat  = $('customer-flat').value.trim();
     const note  = $('special-note').value.trim();
 
     // Validate
@@ -244,6 +245,7 @@
       orderId,
       customerName: name,
       customerPhone: phone,
+      customerFlat: flat,
       items,
       total: getCartTotal(),
       status: 'pending',
@@ -303,6 +305,7 @@
     // Clear form
     $('customer-name').value = '';
     $('customer-phone').value = '';
+    $('customer-flat').value = '';
     $('special-note').value = '';
   });
 
