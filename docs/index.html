@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Protein Nook — Pre-Order</title>
+  <meta name="description" content="Pre-order your breakfast at The Protein Nook. Fresh dosas, omelettes and more!" />
+  <meta name="theme-color" content="#1E4D2B" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- ═══ HERO HEADER ══════════════════════════════════════ -->
+  <header class="hero">
+    <div class="hero-deco tl">🌿</div>
+    <div class="hero-deco tr">🌿</div>
+    <div class="hero-deco bl">☘️</div>
+    <div class="hero-deco br">☘️</div>
+
+    <div class="hero-badge">Good Food · Real Ingredients · Better You</div>
+
+    <h1 class="brand-name">
+      The Protein
+      <span>Nook</span>
+    </h1>
+    <p class="brand-tagline">✦ Where Flavour Meets Fuel ✦</p>
+
+    <div class="hero-pillars">
+      <div class="hero-pillar"><span class="icon">💪</span>High Protein</div>
+      <div class="hero-pillar"><span class="icon">🌿</span>Fresh Ingredients</div>
+      <div class="hero-pillar"><span class="icon">🥗</span>Veg &amp; Non-Veg</div>
+      <div class="hero-pillar"><span class="icon">❤️</span>Made with Care</div>
+    </div>
+
+    <div class="timings-banner">
+      <span>⏰ Morning: 7:30 – 11:00 AM</span>
+      <span class="dot"></span>
+      <span>🌙 Evening: 5:30 – 10:30 PM</span>
+      <span class="dot"></span>
+      <span>📅 Closed: Tuesday</span>
+    </div>
+  </header>
+
+  <!-- ═══ ORDERS CLOSED BANNER ═════════════════════════════ -->
+  <div class="banner-closed hidden" id="banner-closed">
+    <span class="icon">🚫</span>
+    <div>
+      <strong>Kitchen is Currently Closed</strong>
+      <p>Not accepting pre-orders right now. Come back during our timings!</p>
+    </div>
+  </div>
+
+  <!-- ═══ MENU HEADER ═══════════════════════════════════════ -->
+  <section class="menu-header">
+    <span class="sun">☀️</span>
+    <h2>Pre-Order Breakfast Menu</h2>
+    <p>Order in advance. Freshly prepared for you!</p>
+  </section>
+
+  <!-- ═══ LOADING ═══════════════════════════════════════════ -->
+  <div class="loading-spinner" id="loading">
+    <div class="spinner"></div>
+  </div>
+
+  <!-- ═══ MENU ══════════════════════════════════════════════ -->
+  <main class="menu-container hidden" id="menu-container">
+
+    <!-- DOSAS -->
+    <section class="category-section">
+      <div class="category-title">
+        <h3>🥞 Dosas</h3>
+      </div>
+      <div id="dosas-list"></div>
+    </section>
+
+    <!-- OMELETTES -->
+    <section class="category-section">
+      <div class="category-title">
+        <h3>🍳 Omelettes</h3>
+      </div>
+      <div id="omelettes-list"></div>
+    </section>
+
+    <!-- ADD-ONS -->
+    <section class="category-section">
+      <div class="category-title">
+        <h3>✨ Add-ons</h3>
+      </div>
+      <div class="addons-grid" id="addons-list"></div>
+    </section>
+
+  </main>
+
+  <!-- ═══ CART BAR ══════════════════════════════════════════ -->
+  <div class="cart-bar" id="cart-bar">
+    <div class="cart-summary">
+      <span class="cart-count" id="cart-count">0 items</span>
+      <span class="cart-total" id="cart-total">₹0</span>
+    </div>
+    <button class="btn-place-order" id="btn-place-order">
+      Place Order →
+    </button>
+  </div>
+
+  <!-- ═══ ORDER MODAL ═══════════════════════════════════════ -->
+  <div class="modal-overlay" id="order-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Your Order 🍽️</h3>
+        <button class="btn-close" id="modal-close" aria-label="Close">✕</button>
+      </div>
+
+      <!-- Cart review -->
+      <div class="cart-review" id="cart-review"></div>
+
+      <div class="modal-divider"></div>
+
+      <!-- Customer details -->
+      <div class="form-group">
+        <label for="customer-name">Your Name *</label>
+        <input type="text" id="customer-name" placeholder="e.g. Rahul Sharma" autocomplete="name" />
+      </div>
+
+      <div class="form-group">
+        <label for="customer-phone">Phone Number *</label>
+        <input type="tel" id="customer-phone" placeholder="10-digit mobile number" maxlength="10" inputmode="numeric" autocomplete="tel" />
+      </div>
+
+      <div class="form-group">
+        <label for="special-note">Special Instructions</label>
+        <textarea id="special-note" placeholder="Anything we should know? (optional)" rows="2"></textarea>
+      </div>
+
+      <div class="modal-total">
+        <span>Total Amount</span>
+        <span id="modal-total">₹0</span>
+      </div>
+
+      <button class="btn-confirm" id="btn-confirm-order">
+        Confirm & Place Order 🚀
+      </button>
+    </div>
+  </div>
+
+  <!-- ═══ SUCCESS MODAL ═════════════════════════════════════ -->
+  <div class="modal-overlay" id="success-modal">
+    <div class="modal modal-success">
+      <div class="success-icon">🎉</div>
+      <h3>Order Placed!</h3>
+      <p class="success-message">Your order has been received. Keep your order ID handy!</p>
+      <div class="order-id-badge" id="order-id-display">PN-XXXXXX</div>
+      <div class="success-note" id="success-note">
+        We'll call you when it's ready. Come hungry, leave happy! 😊
+      </div>
+      <button class="btn-new-order" id="btn-new-order">Place Another Order</button>
+    </div>
+  </div>
+
+  <!-- ═══ FOOTER ════════════════════════════════════════════ -->
+  <footer class="site-footer">
+    <strong>The Protein Nook</strong><br />
+    Ground Floor, Beside the Salon, Godrej 24<br />
+    <span style="margin-top:6px;display:block;opacity:0.5;font-size:0.72rem;">
+      Eat Smart. Live Strong.
+    </span>
+  </footer>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

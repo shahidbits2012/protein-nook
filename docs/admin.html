@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin — The Protein Nook</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- ═══ LOGIN PAGE ═══════════════════════════════════════ -->
+  <div class="login-page" id="login-page">
+    <div class="login-card">
+      <div class="login-logo">
+        <span class="brand">The Protein Nook</span>
+        <span class="sub">🔐 Admin Portal</span>
+      </div>
+
+      <h2>Welcome back, Chef!</h2>
+
+      <div class="form-group">
+        <label for="login-email">Email</label>
+        <input type="email" id="login-email" placeholder="admin@proteinnook.com" autocomplete="email" />
+      </div>
+
+      <div class="form-group">
+        <label for="login-password">Password</label>
+        <input type="password" id="login-password" placeholder="••••••••" autocomplete="current-password" />
+      </div>
+
+      <button class="btn-login" id="btn-login">Sign In</button>
+
+      <div class="login-error" id="login-error">
+        ❌ Incorrect email or password.
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ ADMIN DASHBOARD ═══════════════════════════════════ -->
+  <div class="admin-page" id="admin-page">
+
+    <!-- Top bar -->
+    <div class="admin-topbar">
+      <div>
+        <div class="brand">🌿 Protein Nook</div>
+        <div class="sub">Admin Dashboard</div>
+      </div>
+      <button class="btn-logout" id="btn-logout">Sign Out</button>
+    </div>
+
+    <!-- Tabs -->
+    <div class="admin-tabs">
+      <div class="admin-tab active" data-tab="orders">
+        <span class="tab-icon">📋</span>
+        Orders
+      </div>
+      <div class="admin-tab" data-tab="menu">
+        <span class="tab-icon">🍽️</span>
+        Menu
+      </div>
+      <div class="admin-tab" data-tab="settings">
+        <span class="tab-icon">⚙️</span>
+        Settings
+      </div>
+    </div>
+
+    <!-- ── Orders Tab ───────────────────────────────────── -->
+    <div class="tab-panel active" id="panel-orders">
+
+      <div class="orders-toolbar">
+        <h2>Live Orders</h2>
+        <div class="orders-filter">
+          <button class="filter-btn active" data-filter="all">All</button>
+          <button class="filter-btn" data-filter="pending">Pending</button>
+          <button class="filter-btn" data-filter="ready">Ready</button>
+          <button class="filter-btn" data-filter="done">Done</button>
+        </div>
+      </div>
+
+      <div id="orders-list">
+        <div class="loading-spinner"><div class="spinner"></div></div>
+      </div>
+
+    </div>
+
+    <!-- ── Menu Tab ─────────────────────────────────────── -->
+    <div class="tab-panel" id="panel-menu">
+
+      <div class="menu-manage-section">
+        <h3>🥞 Dosas</h3>
+        <div id="manage-dosas"></div>
+      </div>
+
+      <div class="menu-manage-section">
+        <h3>🍳 Omelettes</h3>
+        <div id="manage-omelettes"></div>
+      </div>
+
+      <div class="menu-manage-section">
+        <h3>✨ Add-ons</h3>
+        <div id="manage-addons"></div>
+      </div>
+
+    </div>
+
+    <!-- ── Settings Tab ────────────────────────────────── -->
+    <div class="tab-panel" id="panel-settings">
+
+      <div class="settings-card">
+        <h3>🚦 Order Acceptance</h3>
+        <p>Toggle whether the kitchen is accepting new pre-orders right now.</p>
+        <div class="accepting-toggle-row">
+          <div>
+            <div class="accepting-status" id="accepting-status">Loading...</div>
+            <div style="font-size:0.78rem;color:var(--brown-mid);margin-top:4px;">
+              Changes take effect immediately for all customers.
+            </div>
+          </div>
+          <label class="toggle lg">
+            <input type="checkbox" id="toggle-accepting" />
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <div class="settings-card">
+        <h3>📊 Quick Stats</h3>
+        <p>Today's snapshot</p>
+        <div id="stats-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div style="background:var(--cream);border-radius:12px;padding:16px;text-align:center;">
+            <div style="font-size:1.8rem;font-weight:800;color:var(--green-dark);" id="stat-total-orders">–</div>
+            <div style="font-size:0.75rem;color:var(--brown-mid);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-top:4px;">Total Orders</div>
+          </div>
+          <div style="background:var(--cream);border-radius:12px;padding:16px;text-align:center;">
+            <div style="font-size:1.8rem;font-weight:800;color:var(--gold);" id="stat-total-revenue">–</div>
+            <div style="font-size:0.75rem;color:var(--brown-mid);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-top:4px;">Revenue</div>
+          </div>
+          <div style="background:var(--cream);border-radius:12px;padding:16px;text-align:center;">
+            <div style="font-size:1.8rem;font-weight:800;color:var(--gold);" id="stat-pending">–</div>
+            <div style="font-size:0.75rem;color:var(--brown-mid);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-top:4px;">Pending</div>
+          </div>
+          <div style="background:var(--cream);border-radius:12px;padding:16px;text-align:center;">
+            <div style="font-size:1.8rem;font-weight:800;color:#16a34a;" id="stat-done">–</div>
+            <div style="font-size:0.75rem;color:var(--brown-mid);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-top:4px;">Completed</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div><!-- /admin-page -->
+
+  <!-- Firebase SDKs (Auth required for admin) -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>
