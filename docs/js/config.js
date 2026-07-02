@@ -90,11 +90,21 @@ function generateOrderId() {
   return `PN-${yy}${mm}${dd}-${suffix}`;
 }
 
-function getCurrentSession() {
-  const now = new Date();
-  const mins = now.getHours() * 60 + now.getMinutes();
-  if (mins >= 450 && mins <= 660)  return 'morning'; // 7:30–11:00
-  if (mins >= 1050 && mins <= 1350) return 'evening'; // 5:30–10:30
+function getCurrentSession(settings) {
+  const now  = new Date();
+  const time = now.getHours() * 60 + now.getMinutes();
+  function toMins(str, def) {
+    if (!str) return def;
+    const [h, m] = str.split(':').map(Number);
+    return h * 60 + (m || 0);
+  }
+  const s = settings || {};
+  const morningOpen  = toMins(s.morningOpen,  7 * 60 + 30);
+  const morningClose = toMins(s.morningClose, 11 * 60);
+  const eveningOpen  = toMins(s.eveningOpen,  17 * 60 + 30);
+  const eveningClose = toMins(s.eveningClose, 22 * 60 + 30);
+  if (time >= morningOpen && time <= morningClose) return 'morning';
+  if (time >= eveningOpen && time <= eveningClose) return 'evening';
   return 'off-hours';
 }
 

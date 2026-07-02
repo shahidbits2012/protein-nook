@@ -68,6 +68,17 @@
     <!-- ── Orders Tab ───────────────────────────────────── -->
     <div class="tab-panel active" id="panel-orders">
 
+      <!-- Date Navigation -->
+      <div class="date-nav">
+        <button class="date-nav-btn" id="btn-prev-date" title="Previous day">←</button>
+        <div class="date-nav-center">
+          <div class="date-nav-label" id="date-label">Today</div>
+          <div class="date-nav-summary" id="date-summary"></div>
+        </div>
+        <button class="date-nav-btn" id="btn-next-date" title="Next day" disabled>→</button>
+        <button class="btn-today hidden" id="btn-today">Today</button>
+      </div>
+
       <div class="orders-toolbar">
         <h2>Live Orders</h2>
         <div class="orders-filter">
@@ -122,6 +133,31 @@
             <span class="toggle-slider"></span>
           </label>
         </div>
+      </div>
+
+      <div class="settings-card">
+        <h3>⏰ Session Timings</h3>
+        <p>Set the open/close time for each session. Changes reflect on the public page instantly.</p>
+        <div class="timings-form">
+          <div class="timing-row">
+            <span class="session-tag">🌅 Morning</span>
+            <div class="time-inputs">
+              <input type="time" id="morning-open" value="07:30" />
+              <span class="time-sep">to</span>
+              <input type="time" id="morning-close" value="11:00" />
+            </div>
+          </div>
+          <div class="timing-row">
+            <span class="session-tag">🌙 Evening</span>
+            <div class="time-inputs">
+              <input type="time" id="evening-open" value="17:30" />
+              <span class="time-sep">to</span>
+              <input type="time" id="evening-close" value="22:30" />
+            </div>
+          </div>
+        </div>
+        <div id="timings-save-msg" class="save-msg hidden">✅ Timings saved!</div>
+        <button class="btn-save-timings" id="btn-save-timings">Save Timings</button>
       </div>
 
       <div class="settings-card">

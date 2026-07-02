@@ -10,9 +10,51 @@
   let allOrders     = [];
   let currentFilter = 'all';
   let menuState     = {};
+  let storeSettings = {};
   let ordersUnsub   = null;
   let menuUnsub     = null;
   let settingsUnsub = null;
+
+  // selectedDate: YYYY-MM-DD string in local time; null = today
+  let selectedDate  = localDateStr(new Date());
+
+  // ─── Date helpers ────────────────────────────────────────
+  function localDateStr(d) {
+    // Returns "YYYY-MM-DD" in local time (not UTC)
+    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+  }
+
+  function orderDateStr(order) {
+    if (!order.createdAt) return localDateStr(new Date()); // no timestamp = today (just placed)
+    const d = order.createdAt.toDate ? order.createdAt.toDate() : new Date(order.createdAt);
+    return localDateStr(d);
+  }
+
+  function friendlyDate(dateStr) {
+    const today     = localDateStr(new Date());
+    const yesterday = localDateStr(new Date(Date.now() - 86400000));
+    if (dateStr === today)     return 'Today';
+    if (dateStr === yesterday) return 'Yesterday';
+    const d = new Date(dateStr + 'T00:00:00');
+    return d.toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' });
+  }
+
+  function updateDateNav() {
+    const today = localDateStr(new Date());
+    $('date-label').textContent = friendlyDate(selectedDate);
+
+    const dayOrders = allOrders.filter(o => orderDateStr(o) === selectedDate);
+    const pending = dayOrders.filter(o => o.status === 'pending').length;
+    const done    = dayOrders.filter(o => o.status === 'done').length;
+    $('date-summary').textContent = dayOrders.length
+      ? `${dayOrders.length} order${dayOrders.length !== 1 ? 's' : ''} · ${pending} pending · ${done} done`
+      : 'No orders';
+
+    const isToday = selectedDate === today;
+    $('btn-next-date').disabled = isToday;
+    if (isToday) $('btn-today').classList.add('hidden');
+    else         $('btn-today').classList.remove('hidden');
+  }
 
   // ─── DOM ─────────────────────────────────────────────────
   const $ = id => document.getElementById(id);
@@ -102,9 +144,15 @@
   function startListeners() {
     if (DEV_MODE) {
       // Load mock data so the UI is fully testable without Firebase
+      const now = new Date();
+      const yesterday = new Date(now - 86400000);
+      function mockTs(d, h, m) {
+        const t = new Date(d); t.setHours(h, m, 0, 0);
+        return { toDate: () => t };
+      }
       allOrders = [
         {
-          orderId: 'PN-260702-TEST',
+          orderId: 'PN-TODAY-TEST',
           customerName: 'Rahul Sharma',
           customerPhone: '9876543210',
           items: [
@@ -115,10 +163,10 @@
           status: 'pending',
           specialNote: 'Extra chutney please!',
           session: 'morning',
-          createdAt: null,
+          createdAt: mockTs(now, 8, 15),
         },
         {
-          orderId: 'PN-260702-DEMO',
+          orderId: 'PN-TODAY-DEMO',
           customerName: 'Priya Patel',
           customerPhone: '9123456789',
           items: [
@@ -129,10 +177,10 @@
           status: 'ready',
           specialNote: '',
           session: 'morning',
-          createdAt: null,
+          createdAt: mockTs(now, 9, 40),
         },
         {
-          orderId: 'PN-260702-SMPL',
+          orderId: 'PN-YDAY-SMPL',
           customerName: 'Arjun Kumar',
           customerPhone: '9000011111',
           items: [
@@ -142,7 +190,7 @@
           status: 'done',
           specialNote: '',
           session: 'morning',
-          createdAt: null,
+          createdAt: mockTs(yesterday, 8, 55),
         },
       ];
       renderOrders();
@@ -155,6 +203,7 @@
       toggle.checked = true;
       status.textContent = '✅ Open — Accepting Orders';
       status.className = 'accepting-status open';
+      // Timing inputs already have defaults from HTML
       return;
     }
 
@@ -178,6 +227,7 @@
     // Settings
     settingsUnsub = db.collection('settings').doc('store').onSnapshot(snap => {
       const data = snap.exists ? snap.data() : { acceptingOrders: true };
+      storeSettings = data;
       const toggle = $('toggle-accepting');
       const status = $('accepting-status');
       toggle.checked = !!data.acceptingOrders;
@@ -188,15 +238,17 @@
         status.textContent = '🔴 Closed — Not Accepting Orders';
         status.className = 'accepting-status closed';
       }
+      applyTimingsToForm(data);
     });
   }
 
   // ─── Orders Rendering ────────────────────────────────────
   function renderOrders() {
     const list = $('orders-list');
+    const dayOrders = allOrders.filter(o => orderDateStr(o) === selectedDate);
     const filtered = currentFilter === 'all'
-      ? allOrders
-      : allOrders.filter(o => o.status === currentFilter);
+      ? dayOrders
+      : dayOrders.filter(o => o.status === currentFilter);
 
     if (filtered.length === 0) {
       list.innerHTML = `
@@ -295,6 +347,36 @@
     }
   }
 
+  // ─── Date Navigation ─────────────────────────────────────
+  $('btn-prev-date').addEventListener('click', () => {
+    const d = new Date(selectedDate + 'T00:00:00');
+    d.setDate(d.getDate() - 1);
+    selectedDate = localDateStr(d);
+    updateDateNav();
+    renderOrders();
+    updateStats();
+  });
+
+  $('btn-next-date').addEventListener('click', () => {
+    const d = new Date(selectedDate + 'T00:00:00');
+    d.setDate(d.getDate() + 1);
+    const next = localDateStr(d);
+    const today = localDateStr(new Date());
+    if (next <= today) {
+      selectedDate = next;
+      updateDateNav();
+      renderOrders();
+      updateStats();
+    }
+  });
+
+  $('btn-today').addEventListener('click', () => {
+    selectedDate = localDateStr(new Date());
+    updateDateNav();
+    renderOrders();
+    updateStats();
+  });
+
   // ─── Order Filters ────────────────────────────────────────
   document.querySelectorAll('.filter-btn').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -378,24 +460,63 @@
 
   // ─── Stats ───────────────────────────────────────────────
   function updateStats() {
-    // Today's orders only
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    // Stats for the currently selected date
+    const dayOrders = allOrders.filter(o => orderDateStr(o) === selectedDate);
+    const revenue = dayOrders.reduce((s, o) => s + (o.total || 0), 0);
+    const pending = dayOrders.filter(o => o.status === 'pending').length;
+    const done    = dayOrders.filter(o => o.status === 'done').length;
 
-    const todayOrders = allOrders.filter(o => {
-      if (!o.createdAt) return true; // include if no timestamp (just placed)
-      const d = o.createdAt.toDate ? o.createdAt.toDate() : new Date(o.createdAt);
-      return d >= today;
-    });
-
-    const revenue = todayOrders.reduce((s, o) => s + (o.total || 0), 0);
-    const pending = todayOrders.filter(o => o.status === 'pending').length;
-    const done    = todayOrders.filter(o => o.status === 'done').length;
-
-    $('stat-total-orders').textContent = todayOrders.length;
+    $('stat-total-orders').textContent = dayOrders.length;
     $('stat-total-revenue').textContent = `₹${revenue}`;
     $('stat-pending').textContent = pending;
     $('stat-done').textContent = done;
+
+    updateDateNav();
+  }
+
+  // ─── Timing Settings ─────────────────────────────────────
+  $('btn-save-timings').addEventListener('click', async () => {
+    const btn = $('btn-save-timings');
+    const mo = $('morning-open').value;
+    const mc = $('morning-close').value;
+    const eo = $('evening-open').value;
+    const ec = $('evening-close').value;
+
+    if (DEV_MODE) {
+      storeSettings = { ...storeSettings, morningOpen: mo, morningClose: mc, eveningOpen: eo, eveningClose: ec };
+      showTimingsSaved();
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = 'Saving…';
+    try {
+      await db.collection('settings').doc('store').set(
+        { morningOpen: mo, morningClose: mc, eveningOpen: eo, eveningClose: ec,
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp() },
+        { merge: true }
+      );
+      showTimingsSaved();
+    } catch (err) {
+      console.error('Timings save failed:', err);
+      alert('Failed to save timings. Please try again.');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Save Timings';
+    }
+  });
+
+  function showTimingsSaved() {
+    const msg = $('timings-save-msg');
+    msg.classList.remove('hidden');
+    setTimeout(() => msg.classList.add('hidden'), 3000);
+  }
+
+  function applyTimingsToForm(data) {
+    if (data.morningOpen)  $('morning-open').value  = data.morningOpen;
+    if (data.morningClose) $('morning-close').value = data.morningClose;
+    if (data.eveningOpen)  $('evening-open').value  = data.eveningOpen;
+    if (data.eveningClose) $('evening-close').value = data.eveningClose;
   }
 
 })();

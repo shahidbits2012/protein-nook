@@ -39,6 +39,16 @@
   }
 
   // ─── Settings ────────────────────────────────────────────
+  function fmt12(timeStr, def) {
+    // "17:30" → "5:30 PM"
+    if (!timeStr) return def;
+    const [h, m] = timeStr.split(':').map(Number);
+    const ampm  = h >= 12 ? 'PM' : 'AM';
+    const hour  = h % 12 || 12;
+    const min   = String(m || 0).padStart(2, '0');
+    return `${hour}:${min} ${ampm}`;
+  }
+
   function applySettings() {
     if (!settings.acceptingOrders) {
       elBannerClosed.classList.remove('hidden');
@@ -47,6 +57,16 @@
       elBannerClosed.classList.add('hidden');
       $('btn-place-order').disabled = false;
     }
+
+    // Update timings banner with admin-configured times
+    const mOpen  = fmt12(settings.morningOpen,  '7:30 AM');
+    const mClose = fmt12(settings.morningClose, '11:00 AM');
+    const eOpen  = fmt12(settings.eveningOpen,  '5:30 PM');
+    const eClose = fmt12(settings.eveningClose, '10:30 PM');
+    const elM = $('timing-morning');
+    const elE = $('timing-evening');
+    if (elM) elM.textContent = `⏰ Morning: ${mOpen} – ${mClose}`;
+    if (elE) elE.textContent = `🌙 Evening: ${eOpen} – ${eClose}`;
   }
 
   // ─── Menu Rendering ──────────────────────────────────────
@@ -228,7 +248,7 @@
       total: getCartTotal(),
       status: 'pending',
       specialNote: note,
-      session: getCurrentSession(),
+      session: getCurrentSession(settings),
       createdAt: firebase.firestore.FieldValue.serverTimestamp()
     };
 
